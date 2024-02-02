@@ -1,0 +1,46 @@
+CREATE TABLE cliente (
+  id SERIAL PRIMARY KEY,
+  nome VARCHAR(50) NOT NULL,
+  sobrenome VARCHAR(50) NOT NULL,
+  idade INT,
+  pais VARCHAR(50)
+);
+
+CREATE TABLE produto (
+  id SERIAL PRIMARY KEY,
+  item VARCHAR(50) NOT NULL,
+  marca VARCHAR(50) NOT NULL
+);
+
+CREATE TABLE pedido (
+  id SERIAL PRIMARY KEY,
+  fk_id_cliente INT NOT NULL,
+  fk_id_produto INT NOT NULL,
+  quantidade INT NOT NULL,
+  CONSTRAINT fk_cliente FOREIGN KEY (fk_id_cliente) REFERENCES cliente(id),
+  CONSTRAINT fk_produto FOREIGN KEY (fk_id_produto) REFERENCES produto(id)
+);
+
+CREATE TABLE estoque (
+  estoque_id SERIAL PRIMARY KEY,
+  quantidade INT,
+  descricao VARCHAR(100)
+);
+
+CREATE OR REPLACE FUNCTION deletar_pedido()
+RETURNS TRIGGER 
+LANGUAGE PLPGSQL
+AS $$
+BEGIN
+    INSERT INTO log_deletados(tabela, id_deletado, data_delecao)
+    VALUES ('pedido', OLD.id, CURRENT_TIMESTAMP);
+    RETURN OLD;
+END;
+$$;
+
+CREATE TRIGGER trigger_deletar_pedido
+AFTER DELETE ON pedido
+FOR EACH ROW
+EXECUTE FUNCTION deletar_pedido();
+
+
