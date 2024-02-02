@@ -1,0 +1,23 @@
+CREATE TABLE Clientes (
+    id SERIAL PRIMARY KEY,
+    nome VARCHAR(100),
+    email VARCHAR(100)
+);
+
+CREATE TABLE Pedidos (
+    id SERIAL PRIMARY KEY,
+    produto VARCHAR(100),
+    cliente_id INTEGER REFERENCES Clientes(id)
+);
+
+INSERT INTO Clientes (nome, email) VALUES 
+('João', 'joao@email.com');
+('Maria', 'maria@email.com');
+
+INSERT INTO Pedidos (produto, cliente_id) VALUES 
+('Geladeira', 1);
+('Mesa', 2);
+
+SELECT Clientes.nome, Pedidos.produto
+FROM Clientes
+INNER JOIN Pedidos ON Clientes.id = Pedidos.cliente_id;
